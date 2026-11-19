@@ -1,6 +1,6 @@
 # ADR 0002: Free Vercel and Neon environments
 
-Status: selected by the user. Separate projects, application environment variables and protected GitHub secrets were configured on 2026-11-19; Vercel Hobby is confirmed. Staging authentication, database preparation and upload work, but promotion awaits a Prisma runtime packaging fix and live verification. Production remains disabled; see [deployment status](../deployment.md).
+Status: selected by the user. Separate projects, application environment variables and protected GitHub secrets were configured on 2026-11-19; Vercel Hobby is confirmed. Staging authentication and database preparation work, and the Prisma runtime fix is merged. Deployment awaits corrected validation of Vercel's file maps and live verification. Production remains disabled; see [deployment status](../deployment.md).
 
 ## Context
 

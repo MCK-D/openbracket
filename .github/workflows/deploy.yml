@@ -111,15 +111,7 @@ jobs:
       - name: Verify the Vercel runtime and Prisma engine bundle
         if: steps.current.outputs.latest == 'true'
         run: |
-          test -n "$(find -L .vercel/output/functions -name libquery_engine-rhel-openssl-3.0.x.so.node -print -quit)"
-          node --input-type=module <<'NODE'
-          import { globSync, readFileSync } from 'node:fs';
-          const configs = [...globSync('.vercel/output/functions/**/.vc-config.json')].map(path => JSON.parse(readFileSync(path, 'utf8')));
-          const nodeFunctions = configs.filter(config => config.runtime?.startsWith('nodejs'));
-          if (!nodeFunctions.length || nodeFunctions.some(config => config.runtime !== 'nodejs24.x')) {
-            throw new Error('Prebuilt Vercel functions must use Node.js 24.');
-          }
-          NODE
+          npx tsx scripts/verify-vercel-functions.ts
       - name: Stage deployment without changing the public domain
         if: steps.current.outputs.latest == 'true'
         id: release
