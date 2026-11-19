@@ -1,0 +1,131 @@
+name: CI
+on:
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+  push:
+    branches: [main, develop]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  DATABASE_URL: postgresql://openbracket:openbracket@localhost:5432/openbracket?schema=public
+  AUTH_SECRET: ci-only-synthetic-secret-at-least-32-characters
+  DEMO_AUTH_ENABLED: "true"
+  AUTH_TRUST_HOST: "true"
+  NEXT_TELEMETRY_DISABLED: "1"
+  HUSKY: "0"
+jobs:
+  policy:
+    name: Pull request policy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: npm }
+      - run: npm ci
+      - name: Check linked issue and branch promotion
+        if: github.event_name == 'pull_request'
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_BASE: ${{ github.base_ref }}
+          PR_HEAD: ${{ github.head_ref }}
+        run: node scripts/check-pr.mjs
+      - name: Check pull request title
+        if: github.event_name == 'pull_request'
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: printf '%s\n' "$PR_TITLE" | npx commitlint
+      - name: Check branch commit messages
+        if: github.event_name == 'pull_request'
+        run: npx commitlint --from '${{ github.event.pull_request.base.sha }}' --to '${{ github.event.pull_request.head.sha }}'
+  quality:
+    name: Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: npm }
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+  server:
+    name: Server tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: npm }
+      - run: npm ci
+      - run: npm run test:server
+  web:
+    name: Web build and browser tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          {
+            POSTGRES_USER: openbracket,
+            POSTGRES_PASSWORD: openbracket,
+            POSTGRES_DB: openbracket,
+          }
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U openbracket" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: npm }
+      - run: npm ci
+      - run: npm run db:migrate && npm run db:seed
+      - run: npm run test:web
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: browser-traces, path: test-results/, retention-days: 7 }
+  android:
+    name: Android
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: "17" }
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x gradlew && ./gradlew --no-daemon testDebugUnitTest lintDebug assembleDebug
+        working-directory: mobile
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openbracket-android-${{ github.sha }}
+          path: mobile/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
+  docker:
+    name: Container build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+  passed:
+    name: CI passed
+    if: always()
+    needs: [policy, quality, server, web, android, docker]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every check
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: node -e 'const jobs=JSON.parse(process.env.RESULTS); if(Object.values(jobs).some(j=>j.result!=="success")) process.exit(1)'

@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">OpenBracket</string>
+    <string name="tournaments">Tournaments</string>
+    <string name="refresh">Refresh tournaments</string>
+    <string name="loading">Loading tournaments…</string>
+    <string name="empty">No public tournaments yet.</string>
+    <string name="unavailable">Unable to load tournaments. Check your connection and try again.</string>
+    <string name="demo_notice">Synthetic demo data. Predictions and notifications are planned.</string>
+</resources>

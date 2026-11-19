@@ -1,0 +1,428 @@
+[
+  {
+    "epic": "Platform foundation and delivery",
+    "area": "platform",
+    "milestone": "v0.1.0 - Foundation",
+    "section": "03-B, 03-C",
+    "stories": [
+      [
+        "Establish the T3 application foundation",
+        "contributor",
+        "a runnable typed application and protected delivery workflow",
+        "I can build features on a consistent, tested base",
+        "One-command Docker onboarding seeds synthetic tournaments; web/server/browser/native checks and container build pass; docs and staging/production configuration are reviewable"
+      ],
+      [
+        "Activate isolated staging and production hosting",
+        "maintainer",
+        "independent deployed environments",
+        "I can validate staging before releasing production",
+        "Connect the prepared Blueprint without sharing databases or secrets; configure environment-scoped hooks and verify exact-SHA readiness; record both public URLs and perform a rollback rehearsal"
+      ],
+      [
+        "Publish semantic milestone releases",
+        "maintainer",
+        "reviewed versioned release notes",
+        "contributors and reviewers can reproduce each delivered milestone",
+        "Tag reviewed merges using SemVer; include changelog and matching APK artifact; document code and database rollback constraints"
+      ]
+    ]
+  },
+  {
+    "epic": "Identity, permissions and product identity",
+    "area": "identity",
+    "milestone": "v0.2.0 - Tournament core",
+    "section": "01-C, 02-A/B, 03-B",
+    "stories": [
+      [
+        "Implement secure role-based identity and sessions",
+        "user",
+        "a secure role-aware sign-in",
+        "I can perform only the actions permitted to my role",
+        "Support administrator/player/spectator with players also allowed to predict; enforce current roles server-side and secure session expiry; if passwords are introduced hash them and test access denial, CSRF and session revocation"
+      ],
+      [
+        "Create an original cross-platform identity guide",
+        "user",
+        "a recognizable original product identity",
+        "I can navigate consistently across web, mobile and the live dashboard",
+        "Deliver a 1-2 page mini brand guide with original name/logo/tokens; include accessible colors and licensed assets; avoid third-party game/platform or school branding"
+      ],
+      [
+        "Harden sensitive operations against abuse",
+        "administrator",
+        "bounded requests and secure sensitive actions",
+        "the platform remains usable and trustworthy",
+        "Implement distributed rate limits and safe error responses; review OWASP threats, evidence uploads and server authorization; document a dependency, secret and privacy review"
+      ]
+    ]
+  },
+  {
+    "epic": "Tournament administration",
+    "area": "tournaments",
+    "milestone": "v0.2.0 - Tournament core",
+    "section": "02-C",
+    "stories": [
+      [
+        "Configure games and per-game statistics",
+        "administrator",
+        "configurable games and tracked statistics",
+        "Pick'em questions can use relevant match data",
+        "Support games beyond esports and configurable characters/maps/stat definitions; validate typed statistics per round; restrict content creation to administrators and audit changes"
+      ],
+      [
+        "Create tournaments with metadata and visibility",
+        "administrator",
+        "complete tournament settings",
+        "participants understand when, where and how to play",
+        "Support dates, timezone, online/in-person/mixed location, description and rules; enforce public/invite visibility server-side; configure solo/team roster limits and validate invalid dates"
+      ],
+      [
+        "Configure multi-stage tournaments and reusable templates",
+        "administrator",
+        "ordered stages and reusable tournament templates",
+        "I can run recurring competitions without rebuilding settings",
+        "Give each stage its own format and BO1/BO3/BO5 rules; duplicate settings without copying personal or result data; test valid and invalid stage transitions"
+      ]
+    ]
+  },
+  {
+    "epic": "Registration, teams and check-in",
+    "area": "registration",
+    "milestone": "v0.2.0 - Tournament core",
+    "section": "02-C",
+    "stories": [
+      [
+        "Register solo entrants with approval and waitlists",
+        "player",
+        "an entry flow with clear registration status",
+        "I know whether I can participate",
+        "Support open/admin-approved registration, capacity and waitlist; validate administrator-defined custom fields; prevent duplicate/concurrent over-capacity registrations and show accessible errors"
+      ],
+      [
+        "Create teams and invite roster members",
+        "team captain",
+        "team invitations and roster management",
+        "my team can enter a tournament together",
+        "Use expiring, single-purpose invitation links; enforce minimum/maximum starters and substitutes; test unauthorized roster changes, revoked invitations and concurrent acceptance"
+      ],
+      [
+        "Check in and replace absent entrants",
+        "player",
+        "a time-bounded check-in",
+        "organizers know who is ready to play",
+        "Enforce the check-in window on server time; replace absent entrants from the waitlist deterministically; audit replacements and notify affected players"
+      ]
+    ]
+  },
+  {
+    "epic": "Tournament engines and qualifications",
+    "area": "engines",
+    "milestone": "v0.2.0 - Tournament core",
+    "section": "02-C, 03-B tests",
+    "stories": [
+      [
+        "Generate single and double elimination brackets",
+        "administrator",
+        "deterministic elimination brackets",
+        "entrants progress correctly including byes",
+        "Cover non-power-of-two entrants, byes, lower-bracket progression and final rules; apply round-specific best-of settings; test deterministic seeding, corrections and completed-stage invariants"
+      ],
+      [
+        "Run round-robin groups and configurable tie-breaks",
+        "administrator",
+        "group fixtures and standings",
+        "every entrant plays the required opponents",
+        "Generate each pairing once per configured leg; support win/draw/loss points and head-to-head/game-difference tie-breaks; test byes, ties and score corrections"
+      ],
+      [
+        "Pair Swiss rounds without rematches",
+        "administrator",
+        "score-based Swiss pairings",
+        "many entrants can compete in a limited number of rounds",
+        "Prefer score groups without rematches and handle odd entrants; compute Buchholz with documented tie-break ordering; test deterministic pairing, impossible constraints and corrected prior rounds"
+      ],
+      [
+        "Score multi-entrant free-for-all matches",
+        "administrator",
+        "placement-based FFA scoring",
+        "races and battle royale events can be ranked fairly",
+        "Support multiple entrants per match and configurable placement points; validate duplicate/missing placements and tie rules; test aggregate standings and corrections"
+      ],
+      [
+        "Qualify entrants between stages with placement rules",
+        "administrator",
+        "explicit stage qualification and seeding",
+        "group winners reach the correct final-bracket slots",
+        "Support top-N and cross-group placements such as A1 versus B2; handle unresolved ties and insufficient qualifiers; recalculate downstream slots after corrected results with an audit trail"
+      ]
+    ]
+  },
+  {
+    "epic": "Match operations and result pipeline",
+    "area": "results",
+    "milestone": "v0.2.0 - Tournament core",
+    "section": "02-C/G, 03-B",
+    "stories": [
+      [
+        "Schedule matches, stations and participant notifications",
+        "administrator",
+        "an editable match schedule",
+        "in-person and remote entrants know where and when to play",
+        "Set round/match times, estimates and station/table/field assignments; detect resource conflicts; notify entrants on calls and schedule changes with accessible public schedule pages"
+      ],
+      [
+        "Confirm scores, statistics and disputes",
+        "player",
+        "a score reporting and dispute flow",
+        "results are accepted only after agreement or adjudication",
+        "Require double confirmation for participant reports; allow evidence-backed disputes and administrator decisions; validate per-game stats and test permission denial and conflicting concurrent reports"
+      ],
+      [
+        "Handle forfeits, disqualifications and late arrivals",
+        "administrator",
+        "explicit exceptional match outcomes",
+        "the event can continue when participants cannot play",
+        "Define consistent outcomes for each exceptional case; propagate them through every supported format; audit reasons and test their prediction/scoring effects"
+      ],
+      [
+        "Apply results and corrections through one idempotent service",
+        "administrator",
+        "an audited cascade for every result source",
+        "brackets and awarded points remain consistent after corrections",
+        "Share the service between manual/import/connector results; atomically update downstream qualifiers and an idempotent points ledger; test duplicate events, transaction failure, version conflicts and correction history"
+      ]
+    ]
+  },
+  {
+    "epic": "Imports and source connectors",
+    "area": "connectors",
+    "milestone": "v0.3.0 - Predictions and live data",
+    "section": "02-C/D, 03-C",
+    "stories": [
+      [
+        "Import CSV and JSON with preview and rollback",
+        "administrator",
+        "validated file imports",
+        "I can safely bring offline entrants, seeds and results into a tournament",
+        "Document CSV/JSON schemas; show per-row errors and preview before mutation; make imports atomic/undoable and route accepted results through the shared cascade"
+      ],
+      [
+        "Import public start.gg tournaments through an adapter",
+        "administrator",
+        "a start.gg URL or name lookup",
+        "spectators can follow and predict existing community events",
+        "Fetch available phases, brackets, entrants, matches, games, characters, maps, seeds and standings; normalize only public data with source links; make imported results read-only and mock all upstream tests"
+      ],
+      [
+        "Synchronize cached sources with rate-limit recovery",
+        "spectator",
+        "available cached results during upstream outages",
+        "a source failure does not interrupt the event",
+        "Persist last-good snapshots and display freshness; respect Retry-After with capped backoff and automatic resume; test 429, malformed payloads, missing fields, downtime and idempotent recovery"
+      ],
+      [
+        "Document and validate a second connector implementation path",
+        "connector developer",
+        "a complete adapter tutorial and test contract",
+        "I can add a source without modifying core tournament logic",
+        "Expand the normalized interface to full result/stat data; document capability mapping, cache and scheduler registration; validate the guide using a fixture adapter without implementing the optional production second connector"
+      ]
+    ]
+  },
+  {
+    "epic": "Predictions and server-enforced locking",
+    "area": "predictions",
+    "milestone": "v0.3.0 - Predictions and live data",
+    "section": "02-E, 03-B",
+    "stories": [
+      [
+        "Configure and submit match predictions",
+        "spectator",
+        "winner and exact-score predictions",
+        "I can participate in the competition for points",
+        "Administrators configure modes by tournament/phase; allow all signed-in roles including players; validate submissions, ownership and scoring rules with an accessible form"
+      ],
+      [
+        "Submit full-bracket predictions before phase start",
+        "spectator",
+        "a complete bracket prediction",
+        "I can commit to a tournament path in advance",
+        "Provide equivalent keyboard-friendly list/table entry; validate consistent downstream picks; lock the whole phase at its server deadline and test byes and partial submissions"
+      ],
+      [
+        "Enforce transactional deadlines and configurable scoring",
+        "spectator",
+        "fair prediction deadlines and scoring",
+        "late edits cannot change the outcome",
+        "Check server time and match state within the write transaction; test exact boundary, concurrent start/submission and replay attempts; support correct-winner/exact-score bonuses and increasing round points"
+      ],
+      [
+        "Show locked friend picks and public distributions",
+        "spectator",
+        "privacy-aware prediction comparisons",
+        "I can compare my choices without copying others before the deadline",
+        "Hide individual friend picks until locking; show bounded aggregate winner distributions without exposing private groups; test permissions, anonymity and post-correction aggregates"
+      ]
+    ]
+  },
+  {
+    "epic": "Pick'em builder and automatic resolution",
+    "area": "pickem",
+    "milestone": "v0.3.0 - Predictions and live data",
+    "section": "02-F/G",
+    "stories": [
+      [
+        "Build questions from available tournament capabilities",
+        "administrator",
+        "a capability-aware question builder",
+        "every offered question can be resolved from actual data",
+        "Support most-picked, statistic leader, total/count, ranking and yes/no templates; configure points/deadline/data source; hide unsupported templates and audit creation"
+      ],
+      [
+        "Answer Pick'em questions with accessible validation",
+        "spectator",
+        "clear question and answer forms",
+        "I can understand scoring and submit before the deadline",
+        "Explain points and close time in each question; enforce ownership and server-time locking; test all answer types, validation messages and native/web parity"
+      ],
+      [
+        "Resolve, cancel and recalculate Pick'em safely",
+        "spectator",
+        "automatic transparent question resolution",
+        "my points reflect the accepted event data",
+        "Resolve from local or normalized source statistics; cancel and notify when required data is missing; handle ties, corrected data and idempotent reprocessing with audit history"
+      ]
+    ]
+  },
+  {
+    "epic": "Rankings, private groups and rewards",
+    "area": "community",
+    "milestone": "v0.3.0 - Predictions and live data",
+    "section": "02-G",
+    "stories": [
+      [
+        "Publish tournament, season and global rankings",
+        "spectator",
+        "consistent points rankings",
+        "I can follow my progress across competitions",
+        "Define tie-break ordering and season boundaries; derive totals from the auditable ledger; test corrections, pagination and cross-tournament aggregation"
+      ],
+      [
+        "Create private friend groups and rankings",
+        "spectator",
+        "invite-only groups",
+        "I can compare predictions with friends privately",
+        "Implement invitations, membership and owner controls; enforce private leaderboard access server-side; test expired links, removed members and locked-pick visibility"
+      ],
+      [
+        "Award non-monetary badges and titles",
+        "spectator",
+        "badges for prediction achievements",
+        "my performance is recognized without gambling",
+        "Define tournament-best and correct-answer streak achievements; make awards idempotent and correction-aware; prohibit purchases, wagering and valuable prizes"
+      ]
+    ]
+  },
+  {
+    "epic": "Live dashboard and event delivery",
+    "area": "realtime",
+    "milestone": "v0.3.0 - Predictions and live data",
+    "section": "02-G/H",
+    "stories": [
+      [
+        "Deliver versioned result events reliably",
+        "spectator",
+        "live updates that recover after disconnects",
+        "my view follows the accepted tournament state",
+        "Implement transaction-safe outbox publication and SSE or justified alternative; support replay/reconnect without duplicate awards; test access boundaries, event ordering and reduced announcement noise"
+      ],
+      [
+        "Build a fullscreen LAN dashboard",
+        "organizer",
+        "a readable projected dashboard",
+        "the audience can follow the event together",
+        "Show current/upcoming matches, latest results, bracket or standings; include tournament/global/group rankings and prediction/Pick'em statistics; test fullscreen, keyboard, reflow and large-distance readability"
+      ]
+    ]
+  },
+  {
+    "epic": "Native Android experience",
+    "area": "mobile",
+    "milestone": "v1.0.0 - Final demonstration",
+    "section": "02-I, 03-A/B/C",
+    "stories": [
+      [
+        "Add native session handling and live tournament views",
+        "mobile spectator",
+        "secure native event following",
+        "I can follow brackets and scores on my phone",
+        "Extend the Kotlin skeleton without any WebView; define secure session/token storage and native mutation API; provide live bracket-equivalent lists with offline/loading/error states and UI tests"
+      ],
+      [
+        "Submit native predictions and Pick'em answers",
+        "mobile spectator",
+        "native prediction forms",
+        "I can participate from the audience during the demo",
+        "Support winner/exact-score and required Pick'em templates; display server lock times and accessible validation; test submission races, session expiry and dynamic text"
+      ],
+      [
+        "Show mobile rankings and friend groups",
+        "mobile spectator",
+        "my rankings and private groups",
+        "I can check points and compare with friends",
+        "Reuse authoritative API totals with membership checks; support empty, loading and corrected-result states; cover native navigation, logic and UI tests"
+      ],
+      [
+        "Notify mobile spectators of deadlines, results and points",
+        "mobile spectator",
+        "relevant opt-in notifications",
+        "I do not miss predictions or followed results",
+        "Handle Android notification permission and opt-out; notify impending lock, followed result and points gained without duplicates; test deep links, privacy, delayed delivery and accessible content"
+      ]
+    ]
+  },
+  {
+    "epic": "Simulation, quality and final delivery",
+    "area": "quality",
+    "milestone": "v1.0.0 - Final demonstration",
+    "section": "02-J, 03-A/C/D, 04",
+    "stories": [
+      [
+        "Generate complete deterministic simulated tournaments",
+        "presenter",
+        "a reproducible accelerated or live simulation",
+        "I can demonstrate a realistic event without real personal data",
+        "Generate teams, players, spectators, results, per-game stats and predictions; demonstrate Swiss, double elimination and FFA plus two genuine public start.gg imports with resolved Pick'em; support replayable seeds and documented speed controls"
+      ],
+      [
+        "Measure spectator load and ranking latency",
+        "maintainer",
+        "reproducible load-test evidence",
+        "I know supported concurrency and update delays",
+        "Simulate thousands of concurrent predictions on one match; report load profile, hardware, throughput, errors and ranking latency; test upstream outage recovery and record bottlenecks without inventing targets or results"
+      ],
+      [
+        "Audit web and native accessibility with assistive technology",
+        "user with assistive technology",
+        "an accessible complete journey",
+        "I can participate independently",
+        "Combine axe/Lighthouse with keyboard and NVDA/TalkBack checks; test equivalent bracket lists, 200% zoom, dynamic text, 48dp targets, contrast and reduced motion; publish findings, fixes, remaining limits and updated accessibility statement"
+      ],
+      [
+        "Complete newcomer and documentation rehearsals",
+        "new contributor",
+        "accurate user, technical and connector documentation",
+        "I can start in under 15 minutes and extend the product",
+        "Time a fresh clone setup with one-command demo and tests; complete role-based guides, API/schema/format/scoring/realtime/mobile/operations docs; record ADRs, AI disclosure, licenses and screenshots"
+      ],
+      [
+        "Prepare the final live demonstration and release evidence",
+        "reviewer",
+        "a reproducible final presentation",
+        "I can assess every required deliverable",
+        "Run a live simulated event with audience predictions on native Android; demonstrate a genuine start.gg import and accessible journey; provide online URLs, tagged release, APK, brand guide, audits, load report and code-explanation readiness"
+      ]
+    ]
+  }
+]

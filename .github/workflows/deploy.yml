@@ -1,0 +1,43 @@
+name: Deploy
+on:
+  workflow_run:
+    workflows: [CI]
+    branches: [main, develop]
+    types: [completed]
+permissions:
+  contents: read
+  deployments: write
+jobs:
+  deploy:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.workflow_run.head_branch == 'main' && 'production' || 'staging' }}
+      url: ${{ vars.APP_URL }}
+    concurrency:
+      group: deploy-${{ github.event.workflow_run.head_branch }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc }
+      - name: Skip superseded branch commits
+        id: current
+        env:
+          EXPECTED: ${{ github.event.workflow_run.head_sha }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          ACTUAL=$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)
+          if [ "$ACTUAL" = "$EXPECTED" ]; then echo 'latest=true' >> "$GITHUB_OUTPUT"; fi
+      - name: Deployment is prepared but not activated
+        if: vars.DEPLOY_ENABLED != 'true'
+        run: echo 'Hosting activation was deferred. Set environment secrets and variables as described in docs/deployment.md.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Deploy the exact successful commit and wait for readiness
+        if: vars.DEPLOY_ENABLED == 'true' && steps.current.outputs.latest == 'true'
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+          APP_URL: ${{ vars.APP_URL }}
+          COMMIT: ${{ github.event.workflow_run.head_sha }}
+        run: node scripts/deploy.mjs
