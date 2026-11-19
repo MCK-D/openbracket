@@ -2,13 +2,15 @@
 
 ## Environment separation
 
-| Environment | Source                                 | GitHub environment | Render web service       | Database                    |
-| ----------- | -------------------------------------- | ------------------ | ------------------------ | --------------------------- |
-| Local       | Feature branch                         | None               | Docker Compose           | Local PostgreSQL volume     |
-| Staging     | `develop` after reviewed merge         | `staging`          | `openbracket-staging`    | `openbracket-staging-db`    |
-| Production  | `main` after release PR from `develop` | `production`       | `openbracket-production` | `openbracket-production-db` |
+| Environment | Source                                 | GitHub environment | Vercel project        | Neon project             |
+| ----------- | -------------------------------------- | ------------------ | --------------------- | ------------------------ |
+| Local       | Feature branch                         | None               | Docker Compose        | Local PostgreSQL volume  |
+| Staging     | `develop` after reviewed merge         | `staging`          | `openbracket-staging` | `openbracket-staging`    |
+| Production  | `main` after release PR from `develop` | `production`       | `openbracket`         | `openbracket-production` |
 
-Each environment has independent URLs, auth secrets, sessions, databases and deploy hooks. Never copy a production database into staging. Only synthetic records are permitted in either demo environment. Hosting activation is explicitly deferred by the user; there is no online URL yet.
+The two hosted environments have independent stable URLs, auth secrets, databases and deployment project IDs. They use ongoing free plans, not paid trials. Both Vercel projects use the provider's Production deployment target: one is our staging application and the other is our production application. This does not require Vercel's paid custom-environment features. Never copy production data or credentials into staging. All demo identities remain synthetic.
+
+The user selected Vercel and Neon and reported completing plugin setup. Hosted resources and URLs have not yet been verified by this session. GitHub deployment activation remains disabled until account configuration is verified.
 
 ## Required PR checks
 
@@ -25,22 +27,52 @@ The `CI passed` aggregation check fails unless every job succeeds. It is require
 
 The workflow runs without hosting or connector secrets. No production secret is available to untrusted PR code. Failed browser traces and per-commit APKs are retained as artifacts. Android signing is the debug key for emulator/device demos; store publication and release signing are outside this foundation.
 
-## Activate hosting later
+## Configure the two free environments
 
-1. Connect the repository to Render and apply `render.yaml`. It defines two Docker services and two distinct PostgreSQL databases. Free services may sleep; free databases may expire. Confirm current hosting limits before depending on them.
-2. Set each service's `AUTH_URL` to its actual public HTTPS origin. Keep generated `AUTH_SECRET` values separate. Set `AUTH_TRUST_HOST=true` only behind the trusted platform proxy. Demo login stays synthetic and opt-in.
-3. In each corresponding GitHub environment, add secret `RENDER_DEPLOY_HOOK`, variable `APP_URL` and variable `DEPLOY_ENABLED=true`. Keep every hook and API token out of commits and logs. There are no repository-wide deploy secrets.
-4. Render automatic deployment is disabled. The Deploy workflow runs only after a successful push CI on `develop` or `main`, selects the matching environment, deploys that exact SHA, and waits for the health endpoint to report that SHA. PR builds never deploy. Superseded commits are skipped before deployment.
-5. Verify staging first. Open a release PR from `develop` to `main`, review, merge, and verify production. Add both actual URLs to the README once activation is complete.
+1. In Neon, select the Free plan and create two distinct projects. Prefer Frankfurt (`aws-eu-central-1`) to match Vercel's `fra1` region. Keep each project's default branch isolated. Record the actual project IDs after creation; do not assume a project name is an ID.
+2. In Vercel, create the two projects under the intended Hobby account, select Next.js and Node.js 24, and retain `vercel.json`. Do not enable a Pro trial. Disable automatic Git deployments so only reviewed, successful GitHub CI can release code. The file sets `git.deploymentEnabled=false`.
+3. Configure the following values separately in each Vercel project's **Production** environment:
 
-Both environments are created with deployment branch policies. Automatic deployment needs no additional manual approval after the protected branch is merged, matching the manual's continuous-deployment requirement. Hosting is currently disabled intentionally, not silently skipped for a missing secret.
+| Variable                | Value                                                           |
+| ----------------------- | --------------------------------------------------------------- |
+| `DATABASE_URL`          | That Neon project's pooled connection string, with TLS required |
+| `DATABASE_URL_UNPOOLED` | The matching direct connection string, with TLS required        |
+| `AUTH_SECRET`           | A unique random value of at least 32 characters                 |
+| `AUTH_URL`              | That Vercel project's stable public HTTPS origin                |
+| `AUTH_TRUST_HOST`       | `true` behind Vercel's trusted proxy                            |
+| `DEMO_AUTH_ENABLED`     | `true` for the synthetic spectator demonstration                |
+
+Both database URLs must identify the same database and user in the selected environment. `scripts/prepare-database.mjs` checks their host/database/user pairing and rejects a pooled migration endpoint before running migrations or seed. Prisma's `directUrl` points at `DATABASE_URL_UNPOOLED`; application requests continue using `DATABASE_URL`.
+
+4. Make these synthetic showcase deployments public, including their unique deployment URLs, so the native API and pre-promotion health checks do not encounter Vercel Authentication. A private deployment requires a separately designed automation-bypass setup; do not weaken access controls on unrelated Vercel projects.
+5. In the corresponding protected GitHub environment, set:
+
+| Setting             | Type                 | Value                                                     |
+| ------------------- | -------------------- | --------------------------------------------------------- |
+| `VERCEL_TOKEN`      | Environment secret   | A deploy token scoped to the intended Vercel account/team |
+| `VERCEL_ORG_ID`     | Environment variable | Actual account/team ID                                    |
+| `VERCEL_PROJECT_ID` | Environment variable | Actual project ID for this environment                    |
+| `APP_URL`           | Environment variable | Its stable HTTPS origin                                   |
+| `DEPLOY_ENABLED`    | Environment variable | `true` after configuration and initial verification       |
+
+A plugin's interactive OAuth session does not automatically supply GitHub Actions with a deploy token. Configure the token directly in GitHub's environment secret UI; never paste it into chat, commit it, or put it in a command argument. The Vercel CLI reads `VERCEL_TOKEN` only in authenticated steps. Project IDs are ordinary configuration, not credentials.
+
+6. Test staging first, then promote a reviewed release from `develop` to `main`. Record both verified URLs in the README. The first activation may use a manual deployment of the reviewed commit; all subsequent protected-branch merges run automatically.
+
+## Release sequence
+
+`ci.yml` calls the reusable `deploy.yml` only after `CI passed` succeeds on a push to `develop` or `main`. Pull requests never receive deployment secrets or deploy. Reusable workflow calls allow the first staging merge to deploy without waiting for a deployment workflow to be present on the default branch.
+
+The job selects the matching GitHub environment, skips superseded commits, installs the lockfile and pinned Vercel CLI 66.2.0, and pulls that project's Production settings into the ignored `.vercel/` directory. It applies migrations and idempotent seed through the direct connection, builds the exact successful SHA, and uploads the prebuilt output with `--prod --skip-domain`. It injects `APP_REVISION` with the SHA, waits for the unique deployment's health endpoint to report that SHA, and only then promotes the deployment to its stable domain. The public domain must report the same SHA afterward. Downloaded environment values are removed and never uploaded as artifacts.
+
+Both environments have deployment branch policies. No additional manual deployment approval is added after the protected PR review, preserving continuous deployment. Activation is explicit with `DEPLOY_ENABLED`; no missing secret is silently treated as a successful release.
 
 ## Database and rollback
 
-The image starts by applying committed Prisma migrations and an idempotent seed before launching the server. Seed records are created only when absent and never reset user changes. Use additive, backward-compatible migrations; split destructive changes across releases and require a tested backup first. Migration failure prevents startup and the health check keeps the previous service revision serving.
+Migrations must be additive and backward compatible. They run before promotion while the old release can still serve traffic. A failed migration prevents promotion, but reverting code does not revert a migration. Test migrations against production-like synthetic data and verify restore procedures before destructive schema changes. The seed creates missing demo records only; it never overwrites results.
 
-For code rollback, revert through a reviewed PR on the affected branch and let CI redeploy. In an outage, redeploy the last known healthy SHA in Render, then reconcile with a reviewed revert. Reverting code does not revert the database: use a reviewed forward repair migration and restore only from a verified backup when necessary. Never run `prisma migrate reset` against staging or production.
+Normally revert code through a reviewed PR and let CI redeploy. For an urgent rollback, use Vercel's rollback to the last known healthy deployment, then reconcile the source through a reviewed revert. Vercel rollback can disable automatic domain assignment until a deployment is promoted again; this pipeline explicitly promotes each verified release. Use a reviewed forward repair migration for schema problems, or a verified backup restore when necessary. Never use `prisma migrate reset` on either hosted environment.
 
 ## Operations
 
-`/api/health` checks the database and returns no connection details on failure. Check service logs for migration/startup errors and GitHub Actions for build/test failures. Source API retries, durable worker scheduling, full audit history, rate limiting, backup restore rehearsal, load capacity and production monitoring are future issues. No capacity claims are made by this foundation.
+`/api/health` verifies the database and returns the deployed SHA without exposing connection details. Failed exact-revision checks prevent promotion. Inspect Vercel runtime/build logs, GitHub job output and Neon metrics for failures. Source retries, full realtime synchronization, load capacity, manual accessibility audits, backup rehearsal and monitoring remain roadmap work. Free-plan quotas and database scale-to-zero must be considered when designing background activity; no uptime or load-test result is claimed.

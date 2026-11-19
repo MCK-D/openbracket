@@ -12,3 +12,10 @@ This project follows semantic versioning and Conventional Commits.
 - GitHub epics and user stories mapped to the deliverable requirements.
 
 No release tag has been published. The foundation must receive an independent review before merging.
+
+### Hosting update
+
+- Replace the Render blueprint with Vercel configuration and two isolated Neon database targets.
+- Run deployment as a reusable workflow after successful protected-branch CI, including the first staging merge.
+- Use direct database connections for migrations and seed, and pooled connections for the application.
+- Verify the exact revision on a staged deployment before promoting its public domain.

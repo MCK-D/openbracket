@@ -1,6 +1,6 @@
 # ADR 0001: T3 foundation and independent native client
 
-Status: accepted for the foundation. Hosting activation: deferred.
+Status: accepted for the foundation. The hosting decision below is superseded by [ADR 0002](0002-vercel-neon.md).
 
 ## Context
 

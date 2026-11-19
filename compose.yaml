@@ -19,6 +19,7 @@ services:
     env_file: .env
     environment:
       DATABASE_URL: postgresql://openbracket:openbracket@db:5432/openbracket?schema=public
+      DATABASE_URL_UNPOOLED: postgresql://openbracket:openbracket@db:5432/openbracket?schema=public
       AUTH_URL: http://localhost:3000
       AUTH_TRUST_HOST: "true"
     depends_on:

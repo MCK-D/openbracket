@@ -17,7 +17,7 @@
         "maintainer",
         "independent deployed environments",
         "I can validate staging before releasing production",
-        "Connect the prepared Blueprint without sharing databases or secrets; configure environment-scoped hooks and verify exact-SHA readiness; record both public URLs and perform a rollback rehearsal"
+        "Create two Vercel Hobby projects and two Neon Free projects without sharing databases or secrets; configure environment-scoped CI credentials and verify exact-SHA readiness before promotion; record both public URLs and perform a rollback rehearsal"
       ],
       [
         "Publish semantic milestone releases",

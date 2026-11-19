@@ -16,3 +16,5 @@
 Documentation uses English consistently and distinguishes working foundation behavior from future product features.
 
 See also: [foundation validation evidence](validation.md).
+
+Hosting decision: [ADR 0002: Vercel and Neon](adr/0002-vercel-neon.md).

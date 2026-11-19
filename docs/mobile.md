@@ -17,7 +17,7 @@ On Windows use `gradlew.bat`. The committed Gradle wrapper verifies the distribu
 For a real Android device, use `adb reverse tcp:3000 tcp:3000` and build with `-PapiBaseUrl=http://127.0.0.1:3000`, or provide the staging HTTPS origin:
 
 ```sh
-./gradlew assembleDebug -PapiBaseUrl=https://your-staging-service.onrender.com
+./gradlew assembleDebug -PapiBaseUrl=https://your-staging-project.vercel.app
 ```
 
 Use a production HTTPS origin for production-targeted builds. Do not put auth secrets, deploy hooks or start.gg tokens in the APK. The API base URL is a public build-time value, never a credential.

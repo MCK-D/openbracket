@@ -2,7 +2,7 @@
 
 [Open the public Delivery kanban board](https://github.com/users/MCK-D/projects/2). The project is linked to this repository. Each epic is a real issue with native GitHub sub-issues. Every feature story includes its role, desired capability, benefit, acceptance criteria, test/review/documentation checklist, source-manual section, area label and milestone. All issues are intentionally unassigned.
 
-Board states: **Backlog → Ready → In progress → In review → Done**. Move only the story being worked on; complete an epic when its children and integration criteria are complete. The foundation story starts in In review. Hosting activation remains in Backlog because the user deferred it.
+Board states: **Backlog → Ready → In progress → In review → Done**. Move only the story being worked on; complete an epic when its children and integration criteria are complete. The foundation story starts in In review. Hosting activation uses the selected Vercel/Neon free tiers and is in progress; resource creation and online verification remain outstanding.
 
 | Milestone                          | Planned checkpoint | Scope                                                                                  |
 | ---------------------------------- | ------------------ | -------------------------------------------------------------------------------------- |

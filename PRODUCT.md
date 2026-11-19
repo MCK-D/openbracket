@@ -20,4 +20,4 @@ English throughout. Original identity. WCAG 2.2 AA target. Public start.gg data 
 
 ## Open decisions
 
-Hosting activation is deferred by the user. Product identity is provisional: OpenBracket follows the repository name. No final brand assets were supplied.
+The user selected Vercel Hobby and Neon Free, with independent staging and production projects. Plugin setup is reported complete; hosted resource access and activation still need verification. Product identity is provisional: OpenBracket follows the repository name. No final brand assets were supplied.

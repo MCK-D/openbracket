@@ -49,4 +49,4 @@ Web client example: `api.tournament.list.useQuery()` using `src/trpc/react.tsx`.
 
 Validated local or connector results must enter one idempotent result service, update brackets and qualifications, resolve predictions/Pick'em, append an auditable points ledger, and publish one versioned event after transaction commit. Corrections must recalculate descendants and affected points without duplicate awards. A transactional outbox and SSE are the proposed approach; neither is implemented yet. Prediction mutations must enforce server time in the database transaction, not only use the existing pure deadline helper.
 
-See [ADR 0001](adr/0001-foundation.md), [connectors](connectors.md), and the [requirements map](requirements.md).
+See [ADR 0002](adr/0002-vercel-neon.md) for hosting and [ADR 0001](adr/0001-foundation.md), [connectors](connectors.md), and the [requirements map](requirements.md).

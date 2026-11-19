@@ -49,7 +49,7 @@ Browser tests require the seeded database and a production build. For native tes
 
 Feature PRs target protected `develop` for staging. Release PRs promote `develop` into protected `main` for production. Both require a linked issue, Conventional Commits, passing CI and an independent approving review. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Separate staging and production services/databases are defined in `render.yaml`. **Hosting activation is deferred: no online environment is currently claimed.** Environment-specific deployment hooks stay disabled until configured. See [deployment instructions](docs/deployment.md).
+Staging and production use two Vercel Hobby projects and two independent Neon Free PostgreSQL projects. `vercel.json` disables automatic Git deployments so GitHub CI controls release. **Hosted resources and URLs are not yet verified; deployment stays disabled until environment configuration is complete.** See [deployment instructions](docs/deployment.md).
 
 ## Documentation and planning
 

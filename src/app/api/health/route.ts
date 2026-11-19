@@ -7,7 +7,10 @@ export async function GET() {
       status: "ok",
       service: "openbracket",
       version: "0.1.0",
-      revision: process.env.RENDER_GIT_COMMIT ?? "local",
+      revision:
+        process.env.APP_REVISION ??
+        process.env.VERCEL_GIT_COMMIT_SHA ??
+        "local",
     });
   } catch {
     return Response.json(

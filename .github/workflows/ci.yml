@@ -13,6 +13,7 @@ concurrency:
   cancel-in-progress: true
 env:
   DATABASE_URL: postgresql://openbracket:openbracket@localhost:5432/openbracket?schema=public
+  DATABASE_URL_UNPOOLED: postgresql://openbracket:openbracket@localhost:5432/openbracket?schema=public
   AUTH_SECRET: ci-only-synthetic-secret-at-least-32-characters
   DEMO_AUTH_ENABLED: "true"
   AUTH_TRUST_HOST: "true"
@@ -146,3 +147,14 @@ jobs:
         env:
           RESULTS: ${{ toJSON(needs) }}
         run: node -e 'const jobs=JSON.parse(process.env.RESULTS); if(Object.values(jobs).some(j=>j.result!=="success")) process.exit(1)'
+  deploy:
+    name: Deploy environment
+    needs: passed
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    permissions:
+      contents: read
+      deployments: write
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+      commit: ${{ github.sha }}
