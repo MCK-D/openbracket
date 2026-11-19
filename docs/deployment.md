@@ -10,7 +10,14 @@
 
 The two hosted environments have independent stable URLs, auth secrets, databases and deployment project IDs. They use ongoing free plans, not paid trials. Both Vercel projects use the provider's Production deployment target: one is our staging application and the other is our production application. This does not require Vercel's paid custom-environment features. Never copy production data or credentials into staging. All demo identities remain synthetic.
 
-The user selected Vercel and Neon and reported completing plugin setup. Hosted resources and URLs have not yet been verified by this session. GitHub deployment activation remains disabled until account configuration is verified.
+The projects and environment configuration were provisioned and checked on 2026-11-19. Neon organization `MCK` is on the Free plan. Vercel projects use Node.js 24, Frankfurt, and public deployment access. Both protected GitHub environments now contain the required `VERCEL_TOKEN`, database URL and auth secrets; secret presence is verified, but the deploy token has not yet been exercised by a deployment. No deployment has been published or health-checked yet. GitHub deployment activation remains disabled pending Vercel Hobby confirmation, passing CI for the final workflow update, and the required independent PR review before release.
+
+| Environment | Vercel project ID                  | Neon project ID         | Configured domain (not live yet)       |
+| ----------- | ---------------------------------- | ----------------------- | -------------------------------------- |
+| Staging     | `prj_0ut0DXDhhhvyb1ZHhrBUvafEMOYt` | `falling-term-87859056` | `openbracket-staging-mck-d.vercel.app` |
+| Production  | `prj_04RuSJjM7g0fEzdlU1XKHAhsD8fN` | `winter-bird-12737603`  | `openbracket-mck-d.vercel.app`         |
+
+Both Vercel projects belong to `team_MFLlVhpivL75zeDl6TnqXvRd` (`micka-daouds-projects`). Both Neon projects belong to `org-lively-pond-75734198` (`MCK`), use PostgreSQL 17 in Frankfurt, and have independent `openbracket` databases. Each Vercel Production configuration contains its matching pooled/direct database URLs, a unique sensitive auth secret, auth origin, trusted-host flag and synthetic demo flag. The matching protected GitHub environment holds copies of the database URLs and auth secret for CI migrations and local builds: Vercel Secret values cannot be downloaded by `vercel pull`. GitHub environment variables contain the corresponding Vercel account/project IDs and origin; `DEPLOY_ENABLED` remains `false`. Provider secrets are not stored in the repository. Vercel's account response did not expose billing-plan information; verify Hobby status before activation.
 
 ## Required PR checks
 
@@ -47,15 +54,20 @@ Both database URLs must identify the same database and user in the selected envi
 4. Make these synthetic showcase deployments public, including their unique deployment URLs, so the native API and pre-promotion health checks do not encounter Vercel Authentication. A private deployment requires a separately designed automation-bypass setup; do not weaken access controls on unrelated Vercel projects.
 5. In the corresponding protected GitHub environment, set:
 
-| Setting             | Type                 | Value                                                     |
-| ------------------- | -------------------- | --------------------------------------------------------- |
-| `VERCEL_TOKEN`      | Environment secret   | A deploy token scoped to the intended Vercel account/team |
-| `VERCEL_ORG_ID`     | Environment variable | Actual account/team ID                                    |
-| `VERCEL_PROJECT_ID` | Environment variable | Actual project ID for this environment                    |
-| `APP_URL`           | Environment variable | Its stable HTTPS origin                                   |
-| `DEPLOY_ENABLED`    | Environment variable | `true` after configuration and initial verification       |
+| Setting                 | Type                 | Value                                                     |
+| ----------------------- | -------------------- | --------------------------------------------------------- |
+| `VERCEL_TOKEN`          | Environment secret   | A deploy token scoped to the intended Vercel account/team |
+| `DATABASE_URL`          | Environment secret   | Same pooled database URL as this Vercel project           |
+| `DATABASE_URL_UNPOOLED` | Environment secret   | Same direct database URL as this Vercel project           |
+| `AUTH_SECRET`           | Environment secret   | Same auth secret as this Vercel project                   |
+| `VERCEL_ORG_ID`         | Environment variable | Actual account/team ID                                    |
+| `VERCEL_PROJECT_ID`     | Environment variable | Actual project ID for this environment                    |
+| `APP_URL`               | Environment variable | Its stable HTTPS origin                                   |
+| `DEPLOY_ENABLED`        | Environment variable | `true` after configuration and initial verification       |
 
 A plugin's interactive OAuth session does not automatically supply GitHub Actions with a deploy token. Configure the token directly in GitHub's environment secret UI; never paste it into chat, commit it, or put it in a command argument. The Vercel CLI reads `VERCEL_TOKEN` only in authenticated steps. Project IDs are ordinary configuration, not credentials.
+
+Vercel credentials use its Secret type. After pulling project configuration, CI appends the three matching protected GitHub secrets to the downloaded environment file, overriding Vercel's redacted placeholders for the local build and migrations. Rotate both copies together. See [Vercel Secret variables](https://vercel.com/changelog/environment-variables-now-use-config-and-secret-types).
 
 6. Test staging first, then promote a reviewed release from `develop` to `main`. Record both verified URLs in the README. The first activation may use a manual deployment of the reviewed commit; all subsequent protected-branch merges run automatically.
 

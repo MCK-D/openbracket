@@ -1,6 +1,6 @@
 # ADR 0002: Free Vercel and Neon environments
 
-Status: selected by the user. Account/resource verification and deployment activation are pending.
+Status: selected by the user. Separate projects, application environment variables and protected GitHub secrets were configured on 2026-11-19. Vercel Hobby confirmation, release checks and live deployment verification remain pending; see [deployment status](../deployment.md).
 
 ## Context
 
