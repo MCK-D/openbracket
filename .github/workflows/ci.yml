@@ -34,6 +34,7 @@ jobs:
           PR_BODY: ${{ github.event.pull_request.body }}
           PR_BASE: ${{ github.base_ref }}
           PR_HEAD: ${{ github.head_ref }}
+          GH_TOKEN: ${{ github.token }}
         run: node scripts/check-pr.mjs
       - name: Check pull request title
         if: github.event_name == 'pull_request'
@@ -98,6 +99,8 @@ jobs:
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: "17" }
       - uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools platforms;android-35 build-tools;35.0.0"
       - uses: gradle/actions/setup-gradle@v4
       - run: chmod +x gradlew && ./gradlew --no-daemon testDebugUnitTest lintDebug assembleDebug
         working-directory: mobile
