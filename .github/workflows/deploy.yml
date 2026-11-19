@@ -8,6 +8,15 @@ on:
       commit:
         required: true
         type: string
+    secrets:
+      VERCEL_TOKEN:
+        required: true
+      DATABASE_URL:
+        required: true
+      DATABASE_URL_UNPOOLED:
+        required: true
+      AUTH_SECRET:
+        required: true
 permissions:
   contents: read
   deployments: write
@@ -31,6 +40,20 @@ jobs:
       - name: Hosting is awaiting activation
         if: vars.DEPLOY_ENABLED != 'true'
         run: echo 'Vercel/Neon activation is pending. See docs/deployment.md.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Validate protected deployment credentials
+        if: vars.DEPLOY_ENABLED == 'true'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+          APP_URL: ${{ vars.APP_URL }}
+        run: |
+          node --input-type=module <<'NODE'
+          const keys = ['VERCEL_TOKEN', 'DATABASE_URL', 'DATABASE_URL_UNPOOLED', 'AUTH_SECRET', 'VERCEL_ORG_ID', 'VERCEL_PROJECT_ID', 'APP_URL'];
+          const missing = keys.filter(key => !process.env[key]?.trim() || process.env[key] === '[SENSITIVE]');
+          if (missing.length) throw new Error(`Missing protected deployment configuration: ${missing.join(', ')}`);
+          NODE
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         if: vars.DEPLOY_ENABLED == 'true'
         with:
@@ -58,7 +81,7 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          test -n "$VERCEL_TOKEN" && test -n "$VERCEL_ORG_ID" && test -n "$VERCEL_PROJECT_ID"
+          : "${VERCEL_TOKEN:?Missing VERCEL_TOKEN}" "${VERCEL_ORG_ID:?Missing VERCEL_ORG_ID}" "${VERCEL_PROJECT_ID:?Missing VERCEL_PROJECT_ID}"
           vercel pull --yes --environment=production
       - name: Supply protected credentials for the local build
         if: steps.current.outputs.latest == 'true'
