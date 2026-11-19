@@ -155,6 +155,11 @@ jobs:
       contents: read
       deployments: write
     uses: ./.github/workflows/deploy.yml
+    secrets:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
+      AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
     with:
       environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
       commit: ${{ github.sha }}
