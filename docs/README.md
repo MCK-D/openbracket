@@ -14,3 +14,5 @@
 | [ADR 0001](adr/0001-foundation.md) | Stack, Android and environment choices                |
 
 Documentation uses English consistently and distinguishes working foundation behavior from future product features.
+
+See also: [foundation validation evidence](validation.md).

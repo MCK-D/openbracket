@@ -23,6 +23,9 @@ COPY --from=build --chown=app:app /app/node_modules ./node_modules
 COPY --from=build --chown=app:app /app/prisma ./prisma
 COPY --from=build --chown=app:app /app/scripts ./scripts
 COPY --from=build --chown=app:app /app/package.json ./package.json
+COPY --from=build --chown=app:app /app/src ./src
+COPY --from=build --chown=app:app /app/tests ./tests
+COPY --from=build --chown=app:app /app/vitest.config.ts /app/tsconfig.json ./
 USER app
 EXPOSE 3000
 CMD ["sh", "-c", "npx prisma migrate deploy && npm run db:seed && node server.js"]

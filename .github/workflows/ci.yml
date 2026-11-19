@@ -120,8 +120,22 @@ jobs:
         with:
           context: .
           push: false
+          load: true
+          tags: openbracket-app:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: Verify one-command container onboarding
+        run: |
+          cp .env.example .env
+          docker compose up --no-build --detach --wait
+          docker compose exec -T app npm test
+          curl --fail http://localhost:3000/api/health
+      - name: Container diagnostics
+        if: failure()
+        run: docker compose logs
+      - name: Stop containers
+        if: always()
+        run: docker compose down
   passed:
     name: CI passed
     if: always()
