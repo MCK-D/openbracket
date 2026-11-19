@@ -1,0 +1,118 @@
+name: Deploy to Vercel
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      commit:
+        required: true
+        type: string
+permissions:
+  contents: read
+  deployments: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ vars.APP_URL }}
+    concurrency:
+      group: deploy-${{ inputs.environment }}
+      cancel-in-progress: false
+    env:
+      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+      VERCEL_CLI_VERSION: "66.2.0"
+      HUSKY: "0"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - name: Hosting is awaiting activation
+        if: vars.DEPLOY_ENABLED != 'true'
+        run: echo 'Vercel/Neon activation is pending. See docs/deployment.md.' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        if: vars.DEPLOY_ENABLED == 'true'
+        with:
+          ref: ${{ inputs.commit }}
+          persist-credentials: false
+      - name: Skip superseded branch commits
+        if: vars.DEPLOY_ENABLED == 'true'
+        id: current
+        env:
+          EXPECTED: ${{ inputs.commit }}
+          BRANCH: ${{ inputs.environment == 'production' && 'main' || 'develop' }}
+        run: |
+          ACTUAL=$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)
+          if [ "$ACTUAL" = "$EXPECTED" ]; then echo 'latest=true' >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        if: steps.current.outputs.latest == 'true'
+        with: { node-version-file: .nvmrc, cache: npm }
+      - name: Install locked dependencies and pinned Vercel CLI
+        if: steps.current.outputs.latest == 'true'
+        run: |
+          npm ci
+          npm install --global "vercel@$VERCEL_CLI_VERSION"
+      - name: Pull the selected project's production settings
+        if: steps.current.outputs.latest == 'true'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          test -n "$VERCEL_TOKEN" && test -n "$VERCEL_ORG_ID" && test -n "$VERCEL_PROJECT_ID"
+          vercel pull --yes --environment=production
+      - name: Supply protected credentials for the local build
+        if: steps.current.outputs.latest == 'true'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFileSync } from 'node:fs';
+          const keys = ['DATABASE_URL', 'DATABASE_URL_UNPOOLED', 'AUTH_SECRET'];
+          for (const key of keys) {
+            if (!process.env[key] || process.env[key] === '[SENSITIVE]') {
+              throw new Error(`Missing protected environment secret: ${key}`);
+            }
+          }
+          appendFileSync('.vercel/.env.production.local', '\n' + keys.map(key => `${key}=${JSON.stringify(process.env[key])}`).join('\n') + '\n');
+          NODE
+      - name: Apply migrations and seed this environment
+        if: steps.current.outputs.latest == 'true'
+        run: node --env-file=.vercel/.env.production.local scripts/prepare-database.mjs
+      - name: Build the tested commit
+        if: steps.current.outputs.latest == 'true'
+        env:
+          APP_REVISION: ${{ inputs.commit }}
+        run: vercel build --prod
+      - name: Stage deployment without changing the public domain
+        if: steps.current.outputs.latest == 'true'
+        id: release
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          COMMIT: ${{ inputs.commit }}
+        run: |
+          URL=$(vercel deploy --prebuilt --prod --skip-domain --archive=tgz --env "APP_REVISION=$COMMIT" --meta "githubCommitSha=$COMMIT")
+          DEPLOYMENT_URL="$URL" node --input-type=module -e 'const u=new URL(process.env.DEPLOYMENT_URL); if(u.protocol!=="https:" || !u.hostname.endsWith(".vercel.app") || u.origin!==process.env.DEPLOYMENT_URL) process.exit(1)'
+          printf 'url=%s\n' "$URL" >> "$GITHUB_OUTPUT"
+      - name: Verify the new deployment before promotion
+        if: steps.current.outputs.latest == 'true'
+        env:
+          APP_URL: ${{ steps.release.outputs.url }}
+          COMMIT: ${{ inputs.commit }}
+        run: npx tsx scripts/verify-deployment.ts
+      - name: Promote the verified deployment
+        if: steps.current.outputs.latest == 'true'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          DEPLOYMENT_URL: ${{ steps.release.outputs.url }}
+        run: vercel promote "$DEPLOYMENT_URL" --yes
+      - name: Verify the public environment
+        if: steps.current.outputs.latest == 'true'
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          COMMIT: ${{ inputs.commit }}
+        run: npx tsx scripts/verify-deployment.ts
+      - name: Remove downloaded environment secrets
+        if: always()
+        run: rm -f .vercel/.env.production.local

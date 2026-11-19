@@ -58,3 +58,6 @@ mobile/**/build/
 *.keystore
 *.jks
 !mobile/gradle/wrapper/gradle-wrapper.jar
+
+# Deployment environment downloads
+.env.deployment*

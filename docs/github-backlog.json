@@ -1,0 +1,336 @@
+[
+  {
+    "epic": "Platform foundation and delivery",
+    "number": 1,
+    "url": "https://github.com/MCK-D/openbracket/issues/1",
+    "milestone": "v0.1.0 - Foundation",
+    "stories": [
+      {
+        "number": 2,
+        "title": "Establish the T3 application foundation",
+        "url": "https://github.com/MCK-D/openbracket/issues/2"
+      },
+      {
+        "number": 3,
+        "title": "Activate isolated staging and production hosting",
+        "url": "https://github.com/MCK-D/openbracket/issues/3"
+      },
+      {
+        "number": 4,
+        "title": "Publish semantic milestone releases",
+        "url": "https://github.com/MCK-D/openbracket/issues/4"
+      }
+    ]
+  },
+  {
+    "epic": "Identity, permissions and product identity",
+    "number": 5,
+    "url": "https://github.com/MCK-D/openbracket/issues/5",
+    "milestone": "v0.2.0 - Tournament core",
+    "stories": [
+      {
+        "number": 6,
+        "title": "Implement secure role-based identity and sessions",
+        "url": "https://github.com/MCK-D/openbracket/issues/6"
+      },
+      {
+        "number": 7,
+        "title": "Create an original cross-platform identity guide",
+        "url": "https://github.com/MCK-D/openbracket/issues/7"
+      },
+      {
+        "number": 8,
+        "title": "Harden sensitive operations against abuse",
+        "url": "https://github.com/MCK-D/openbracket/issues/8"
+      }
+    ]
+  },
+  {
+    "epic": "Tournament administration",
+    "number": 9,
+    "url": "https://github.com/MCK-D/openbracket/issues/9",
+    "milestone": "v0.2.0 - Tournament core",
+    "stories": [
+      {
+        "number": 10,
+        "title": "Configure games and per-game statistics",
+        "url": "https://github.com/MCK-D/openbracket/issues/10"
+      },
+      {
+        "number": 11,
+        "title": "Create tournaments with metadata and visibility",
+        "url": "https://github.com/MCK-D/openbracket/issues/11"
+      },
+      {
+        "number": 12,
+        "title": "Configure multi-stage tournaments and reusable templates",
+        "url": "https://github.com/MCK-D/openbracket/issues/12"
+      }
+    ]
+  },
+  {
+    "epic": "Registration, teams and check-in",
+    "number": 13,
+    "url": "https://github.com/MCK-D/openbracket/issues/13",
+    "milestone": "v0.2.0 - Tournament core",
+    "stories": [
+      {
+        "number": 14,
+        "title": "Register solo entrants with approval and waitlists",
+        "url": "https://github.com/MCK-D/openbracket/issues/14"
+      },
+      {
+        "number": 15,
+        "title": "Create teams and invite roster members",
+        "url": "https://github.com/MCK-D/openbracket/issues/15"
+      },
+      {
+        "number": 16,
+        "title": "Check in and replace absent entrants",
+        "url": "https://github.com/MCK-D/openbracket/issues/16"
+      }
+    ]
+  },
+  {
+    "epic": "Tournament engines and qualifications",
+    "number": 17,
+    "url": "https://github.com/MCK-D/openbracket/issues/17",
+    "milestone": "v0.2.0 - Tournament core",
+    "stories": [
+      {
+        "number": 18,
+        "title": "Generate single and double elimination brackets",
+        "url": "https://github.com/MCK-D/openbracket/issues/18"
+      },
+      {
+        "number": 19,
+        "title": "Run round-robin groups and configurable tie-breaks",
+        "url": "https://github.com/MCK-D/openbracket/issues/19"
+      },
+      {
+        "number": 20,
+        "title": "Pair Swiss rounds without rematches",
+        "url": "https://github.com/MCK-D/openbracket/issues/20"
+      },
+      {
+        "number": 21,
+        "title": "Score multi-entrant free-for-all matches",
+        "url": "https://github.com/MCK-D/openbracket/issues/21"
+      },
+      {
+        "number": 22,
+        "title": "Qualify entrants between stages with placement rules",
+        "url": "https://github.com/MCK-D/openbracket/issues/22"
+      }
+    ]
+  },
+  {
+    "epic": "Match operations and result pipeline",
+    "number": 23,
+    "url": "https://github.com/MCK-D/openbracket/issues/23",
+    "milestone": "v0.2.0 - Tournament core",
+    "stories": [
+      {
+        "number": 24,
+        "title": "Schedule matches, stations and participant notifications",
+        "url": "https://github.com/MCK-D/openbracket/issues/24"
+      },
+      {
+        "number": 25,
+        "title": "Confirm scores, statistics and disputes",
+        "url": "https://github.com/MCK-D/openbracket/issues/25"
+      },
+      {
+        "number": 26,
+        "title": "Handle forfeits, disqualifications and late arrivals",
+        "url": "https://github.com/MCK-D/openbracket/issues/26"
+      },
+      {
+        "number": 27,
+        "title": "Apply results and corrections through one idempotent service",
+        "url": "https://github.com/MCK-D/openbracket/issues/27"
+      }
+    ]
+  },
+  {
+    "epic": "Imports and source connectors",
+    "number": 28,
+    "url": "https://github.com/MCK-D/openbracket/issues/28",
+    "milestone": "v0.3.0 - Predictions and live data",
+    "stories": [
+      {
+        "number": 29,
+        "title": "Import CSV and JSON with preview and rollback",
+        "url": "https://github.com/MCK-D/openbracket/issues/29"
+      },
+      {
+        "number": 30,
+        "title": "Import public start.gg tournaments through an adapter",
+        "url": "https://github.com/MCK-D/openbracket/issues/30"
+      },
+      {
+        "number": 31,
+        "title": "Synchronize cached sources with rate-limit recovery",
+        "url": "https://github.com/MCK-D/openbracket/issues/31"
+      },
+      {
+        "number": 32,
+        "title": "Document and validate a second connector implementation path",
+        "url": "https://github.com/MCK-D/openbracket/issues/32"
+      }
+    ]
+  },
+  {
+    "epic": "Predictions and server-enforced locking",
+    "number": 33,
+    "url": "https://github.com/MCK-D/openbracket/issues/33",
+    "milestone": "v0.3.0 - Predictions and live data",
+    "stories": [
+      {
+        "number": 34,
+        "title": "Configure and submit match predictions",
+        "url": "https://github.com/MCK-D/openbracket/issues/34"
+      },
+      {
+        "number": 35,
+        "title": "Submit full-bracket predictions before phase start",
+        "url": "https://github.com/MCK-D/openbracket/issues/35"
+      },
+      {
+        "number": 36,
+        "title": "Enforce transactional deadlines and configurable scoring",
+        "url": "https://github.com/MCK-D/openbracket/issues/36"
+      },
+      {
+        "number": 37,
+        "title": "Show locked friend picks and public distributions",
+        "url": "https://github.com/MCK-D/openbracket/issues/37"
+      }
+    ]
+  },
+  {
+    "epic": "Pick'em builder and automatic resolution",
+    "number": 38,
+    "url": "https://github.com/MCK-D/openbracket/issues/38",
+    "milestone": "v0.3.0 - Predictions and live data",
+    "stories": [
+      {
+        "number": 39,
+        "title": "Build questions from available tournament capabilities",
+        "url": "https://github.com/MCK-D/openbracket/issues/39"
+      },
+      {
+        "number": 40,
+        "title": "Answer Pick'em questions with accessible validation",
+        "url": "https://github.com/MCK-D/openbracket/issues/40"
+      },
+      {
+        "number": 41,
+        "title": "Resolve, cancel and recalculate Pick'em safely",
+        "url": "https://github.com/MCK-D/openbracket/issues/41"
+      }
+    ]
+  },
+  {
+    "epic": "Rankings, private groups and rewards",
+    "number": 42,
+    "url": "https://github.com/MCK-D/openbracket/issues/42",
+    "milestone": "v0.3.0 - Predictions and live data",
+    "stories": [
+      {
+        "number": 43,
+        "title": "Publish tournament, season and global rankings",
+        "url": "https://github.com/MCK-D/openbracket/issues/43"
+      },
+      {
+        "number": 44,
+        "title": "Create private friend groups and rankings",
+        "url": "https://github.com/MCK-D/openbracket/issues/44"
+      },
+      {
+        "number": 45,
+        "title": "Award non-monetary badges and titles",
+        "url": "https://github.com/MCK-D/openbracket/issues/45"
+      }
+    ]
+  },
+  {
+    "epic": "Live dashboard and event delivery",
+    "number": 46,
+    "url": "https://github.com/MCK-D/openbracket/issues/46",
+    "milestone": "v0.3.0 - Predictions and live data",
+    "stories": [
+      {
+        "number": 47,
+        "title": "Deliver versioned result events reliably",
+        "url": "https://github.com/MCK-D/openbracket/issues/47"
+      },
+      {
+        "number": 48,
+        "title": "Build a fullscreen LAN dashboard",
+        "url": "https://github.com/MCK-D/openbracket/issues/48"
+      }
+    ]
+  },
+  {
+    "epic": "Native Android experience",
+    "number": 49,
+    "url": "https://github.com/MCK-D/openbracket/issues/49",
+    "milestone": "v1.0.0 - Final demonstration",
+    "stories": [
+      {
+        "number": 50,
+        "title": "Add native session handling and live tournament views",
+        "url": "https://github.com/MCK-D/openbracket/issues/50"
+      },
+      {
+        "number": 51,
+        "title": "Submit native predictions and Pick'em answers",
+        "url": "https://github.com/MCK-D/openbracket/issues/51"
+      },
+      {
+        "number": 52,
+        "title": "Show mobile rankings and friend groups",
+        "url": "https://github.com/MCK-D/openbracket/issues/52"
+      },
+      {
+        "number": 53,
+        "title": "Notify mobile spectators of deadlines, results and points",
+        "url": "https://github.com/MCK-D/openbracket/issues/53"
+      }
+    ]
+  },
+  {
+    "epic": "Simulation, quality and final delivery",
+    "number": 54,
+    "url": "https://github.com/MCK-D/openbracket/issues/54",
+    "milestone": "v1.0.0 - Final demonstration",
+    "stories": [
+      {
+        "number": 55,
+        "title": "Generate complete deterministic simulated tournaments",
+        "url": "https://github.com/MCK-D/openbracket/issues/55"
+      },
+      {
+        "number": 56,
+        "title": "Measure spectator load and ranking latency",
+        "url": "https://github.com/MCK-D/openbracket/issues/56"
+      },
+      {
+        "number": 57,
+        "title": "Audit web and native accessibility with assistive technology",
+        "url": "https://github.com/MCK-D/openbracket/issues/57"
+      },
+      {
+        "number": 58,
+        "title": "Complete newcomer and documentation rehearsals",
+        "url": "https://github.com/MCK-D/openbracket/issues/58"
+      },
+      {
+        "number": 59,
+        "title": "Prepare the final live demonstration and release evidence",
+        "url": "https://github.com/MCK-D/openbracket/issues/59"
+      }
+    ]
+  }
+]

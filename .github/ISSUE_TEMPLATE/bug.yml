@@ -1,0 +1,24 @@
+name: Bug or accessibility barrier
+description: Report broken behavior or an accessibility problem
+title: "fix: "
+labels: [bug]
+body:
+  - type: textarea
+    id: reproduction
+    attributes: { label: Steps to reproduce }
+    validations: { required: true }
+  - type: textarea
+    id: expected
+    attributes: { label: Expected and actual behavior }
+    validations: { required: true }
+  - type: input
+    id: environment
+    attributes:
+      { label: Browser, device, environment, and assistive technology }
+  - type: textarea
+    id: evidence
+    attributes:
+      {
+        label: Screenshots or sanitized logs,
+        description: Do not include secrets or real personal information.,
+      }

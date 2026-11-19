@@ -1,0 +1,23 @@
+name: Feature story
+description: A feature with a user story and testable acceptance criteria
+title: "feat: "
+labels: [feature]
+body:
+  - type: textarea
+    id: story
+    attributes:
+      label: User story
+      description: As a [role], I want [capability], so that [outcome].
+    validations: { required: true }
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Include error cases, permissions, accessibility, and tests.
+    validations: { required: true }
+  - type: input
+    id: epic
+    attributes: { label: Parent epic, placeholder: "#123" }
+  - type: textarea
+    id: dependencies
+    attributes: { label: Dependencies and documentation }
