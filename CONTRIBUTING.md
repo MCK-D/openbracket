@@ -12,7 +12,7 @@ Read the [README](README.md) and [developer guide](docs/development.md). All cod
 
 Feature PRs may squash with a conventional title. Release promotions should use merge commits to retain shared branch ancestry; synchronize `main` back into `develop` through a PR when necessary. The repository therefore permits both squash and merge, and does not require linear history.
 
-Use semantic versions for milestone releases: `v0.1.0` foundation, `v0.2.0` tournament core, `v0.3.0` engagement, and `v1.0.0` final demonstration. Create tags only after the matching release PR is reviewed and merged. Never mark planned features as complete.
+Use semantic versions for milestone releases: `v0.1.0` foundation, `v0.2.0` tournament core, `v0.3.0` engagement, and `v1.0.0` final demonstration. Create tags only after the matching release PR is reviewed, merged and deployed to production; the release workflow then publishes the changelog section and APK. Follow [docs/releases.md](docs/releases.md). Never mark planned features as complete.
 
 ## Security and data
 
