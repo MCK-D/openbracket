@@ -7,6 +7,7 @@
 | [Deployment](deployment.md)        | CI/CD, staging, production, secrets and rollback      |
 | [Users](users.md)                  | Current administrator, player and spectator workflows |
 | [Connectors](connectors.md)        | Interface, normalization and a connector tutorial     |
+| [Engines](engines.md)              | Bracket, round-robin, Swiss and FFA rules             |
 | [Mobile](mobile.md)                | Native Android setup, tests, build and limitations    |
 | [Accessibility](accessibility.md)  | Target, evidence, manual audit plan                   |
 | [Requirements](requirements.md)    | Deliverable traceability and remaining scope          |
