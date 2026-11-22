@@ -35,6 +35,7 @@ export default function RootLayout({
               <div className="flex items-center gap-6 text-sm">
                 <Link href="/">Tournaments</Link>
                 <Link href="/accessibility">Accessibility</Link>
+                <Link href="/account">Account</Link>
               </div>
             </nav>
           </header>

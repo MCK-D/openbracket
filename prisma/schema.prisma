@@ -45,15 +45,19 @@ model Session {
 }
 
 model User {
-  id            String     @id @default(cuid())
-  name          String?
-  email         String?    @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  role          Role       @default(SPECTATOR)
-  auditLogs     AuditLog[]
+  id             String     @id @default(cuid())
+  name           String?
+  email          String?    @unique
+  emailVerified  DateTime?
+  image          String?
+  accounts       Account[]
+  sessions       Session[]
+  role           Role       @default(SPECTATOR)
+  /// scrypt hash in the format produced by src/server/domain/passwords.ts; null for accounts without a password.
+  passwordHash   String?
+  /// Incremented to revoke every issued session of this user.
+  sessionVersion Int        @default(0)
+  auditLogs      AuditLog[]
 }
 
 model VerificationToken {

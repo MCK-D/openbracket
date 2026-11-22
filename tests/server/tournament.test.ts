@@ -16,7 +16,9 @@ function caller(userId?: string) {
       user: { findUnique: mocks.findUnique },
       $transaction: mocks.transaction,
     } as unknown as Context["db"],
-    session: userId ? { user: { id: userId }, expires: "2027-01-01" } : null,
+    session: userId
+      ? { user: { id: userId, role: "SPECTATOR" }, expires: "2027-01-01" }
+      : null,
     headers: new Headers(),
   });
 }
