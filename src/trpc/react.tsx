@@ -8,6 +8,7 @@ import { useState } from "react";
 import SuperJSON from "superjson";
 
 import type { AppRouter } from "~/server/api/root";
+import { TRPC_MAX_BATCH_SIZE } from "./limits";
 import { createQueryClient } from "./query-client";
 
 let clientQueryClientSingleton: QueryClient | undefined = undefined;
@@ -44,14 +45,14 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
   const [trpcClient] = useState(() =>
     api.createClient({
       links: [
+        // Development only: the logger prints operation inputs, which include passwords.
         loggerLink({
-          enabled: (op) =>
-            process.env.NODE_ENV === "development" ||
-            (op.direction === "down" && op.result instanceof Error),
+          enabled: () => process.env.NODE_ENV === "development",
         }),
         httpBatchStreamLink({
           transformer: SuperJSON,
           url: getBaseUrl() + "/api/trpc",
+          maxItems: TRPC_MAX_BATCH_SIZE,
           headers: () => {
             const headers = new Headers();
             headers.set("x-trpc-source", "nextjs-react");

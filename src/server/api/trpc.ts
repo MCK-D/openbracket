@@ -13,6 +13,7 @@ import { ZodError } from "zod";
 
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
+import { isSameOriginRequest, requireAdmin } from "~/server/domain/permissions";
 
 /**
  * 1. CONTEXT
@@ -46,8 +47,13 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
+    // Unexpected errors can carry database or file details; only expected errors keep their message.
+    const hidden =
+      error.code === "INTERNAL_SERVER_ERROR" &&
+      process.env.NODE_ENV === "production";
     return {
       ...shape,
+      message: hidden ? "Something went wrong. Try again." : shape.message,
       data: {
         ...shape.data,
         zodError:
@@ -93,13 +99,31 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 });
 
 /**
+ * Cross-site request forgery guard: browsers always send Origin on POST, so a mutation whose Origin
+ * differs from the request host is refused. Requests without Origin (server callers, curl) carry no
+ * ambient browser cookies from another site.
+ */
+const sameOriginMiddleware = t.middleware(({ ctx, type, next }) => {
+  if (type === "mutation" && !isSameOriginRequest(ctx.headers))
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Cross-site requests are not allowed.",
+    });
+  return next();
+});
+
+const baseProcedure = t.procedure
+  .use(timingMiddleware)
+  .use(sameOriginMiddleware);
+
+/**
  * Public (unauthenticated) procedure
  *
  * This is the base piece you use to build new queries and mutations on your tRPC API. It does not
  * guarantee that a user querying is authorized, but you can still access user session data if they
  * are logged in.
  */
-export const publicProcedure = t.procedure.use(timingMiddleware);
+export const publicProcedure = baseProcedure;
 
 /**
  * Protected (authenticated) procedure
@@ -109,16 +133,24 @@ export const publicProcedure = t.procedure.use(timingMiddleware);
  *
  * @see https://trpc.io/docs/procedures
  */
-export const protectedProcedure = t.procedure
-  .use(timingMiddleware)
-  .use(({ ctx, next }) => {
-    if (!ctx.session?.user) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
-    }
-    return next({
-      ctx: {
-        // infers the `session` as non-nullable
-        session: { ...ctx.session, user: ctx.session.user },
-      },
-    });
+export const protectedProcedure = baseProcedure.use(({ ctx, next }) => {
+  if (!ctx.session?.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
   });
+});
+
+/** Administrator procedure: reloads the role from PostgreSQL so a demotion applies to the next request. */
+export const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+  const user = await ctx.db.user.findUnique({
+    where: { id: ctx.session.user.id },
+    select: { role: true },
+  });
+  requireAdmin(user?.role);
+  return next();
+});

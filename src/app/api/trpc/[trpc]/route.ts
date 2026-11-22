@@ -4,6 +4,7 @@ import { type NextRequest } from "next/server";
 import { env } from "~/env";
 import { appRouter } from "~/server/api/root";
 import { createTRPCContext } from "~/server/api/trpc";
+import { TRPC_MAX_BATCH_SIZE } from "~/trpc/limits";
 
 /**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
@@ -20,6 +21,8 @@ const handler = (req: NextRequest) =>
     endpoint: "/api/trpc",
     req,
     router: appRouter,
+    // Each call can cost a password hash or a write; bound the work one request can trigger.
+    maxBatchSize: TRPC_MAX_BATCH_SIZE,
     createContext: () => createContext(req),
     onError:
       env.NODE_ENV === "development"

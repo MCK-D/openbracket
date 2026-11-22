@@ -26,7 +26,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "demo": "tsx scripts/simulate.ts",
     "setup": "node scripts/setup.mjs",
-    "prepare": "husky"
+    "prepare": "husky",
+    "user:grant-admin": "tsx scripts/grant-admin.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.2",

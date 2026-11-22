@@ -8,15 +8,15 @@ These are demonstration records. Do not enter real names, real player accounts, 
 
 ## Spectators
 
-Anyone can browse public tournaments without signing in. A synthetic spectator login is available through Auth.js when demo authentication is enabled; use alias `demo-spectator` at `/api/auth/signin`. Predictions, Pick'em answers, points, badges, friend groups and live updates are planned and are not yet available. Points will have no monetary value.
+Anyone can browse public tournaments without signing in. To sign in, select **Account**, then create an account at `/register` as a spectator or a player (password of at least 12 characters). The Account page shows your role, signs you out, or signs you out on every device. A synthetic spectator login is also available when demo authentication is enabled; use alias `demo-spectator` at `/api/auth/signin`. Predictions, Pick'em answers, points, badges, friend groups and live updates are planned and are not yet available. Points will have no monetary value.
 
 ## Players
 
-Tournament registration, team invitations, check-in, score reporting, evidence uploads and disputes are planned. The current match participants are fictional labels. There is no player account creation or registration button yet.
+Tournament registration, team invitations, check-in, score reporting, evidence uploads and disputes are planned. The current match participants are fictional labels. Player accounts can be created at `/register`; tournament registration itself is not available yet.
 
 ## Administrators
 
-The typed backend includes an administrator-only tournament creation procedure with an audit entry. There is no administrator web form or demo administrator login. Game/stat configuration, stages, registration rules, scheduling, imports, disputes, prediction settings, question builder and projected dashboard are tracked as future stories. Do not treat the current format labels as working bracket engines.
+The typed backend includes an administrator-only tournament creation procedure with an audit entry. There is no administrator web form or demo administrator login. The first administrator is appointed by a maintainer with `npm run user:grant-admin -- <email>` on an existing account; administrators then change other users' roles through `account.setRole`, which signs the affected user out. Game/stat configuration, stages, registration rules, scheduling, imports, disputes, prediction settings, question builder and projected dashboard are tracked as future stories. Do not treat the current format labels as working bracket engines.
 
 ## Android
 
