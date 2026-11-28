@@ -1,0 +1,90 @@
+name: Rollback rehearsal
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment to rehearse (run from develop for staging, main for production)
+        required: true
+        type: choice
+        options: [staging, production]
+permissions:
+  contents: read
+jobs:
+  rehearse:
+    name: Roll back and restore ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ vars.APP_URL }}
+    concurrency:
+      group: deploy-${{ inputs.environment }}
+      cancel-in-progress: false
+    env:
+      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+      APP_URL: ${{ vars.APP_URL }}
+      VERCEL_CLI_VERSION: "66.2.0"
+      HUSKY: "0"
+    steps:
+      - name: Require the environment's own branch
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+          EXPECTED: ${{ inputs.environment == 'production' && 'main' || 'develop' }}
+        run: |
+          [ "$GITHUB_REF_NAME" = "$EXPECTED" ] || {
+            echo "::error::Run the $ENVIRONMENT rehearsal from $EXPECTED."; exit 1; }
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with: { node-version-file: .nvmrc, cache: npm }
+      - name: Install locked dependencies and pinned Vercel CLI
+        run: |
+          npm ci
+          npm install --global "vercel@$VERCEL_CLI_VERSION"
+      - name: Select the live and previous healthy deployments
+        id: pair
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: npx tsx scripts/rollback-candidates.ts
+      - name: Roll back to the previous deployment
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          PREVIOUS_URL: ${{ steps.pair.outputs.previous_url }}
+        run: |
+          date -u +%s > rollback-start
+          vercel rollback "$PREVIOUS_URL" --yes
+      - name: Verify the public domain serves the previous revision
+        env:
+          COMMIT: ${{ steps.pair.outputs.previous_revision }}
+        run: |
+          npx tsx scripts/verify-deployment.ts
+          echo "ROLLBACK_SECONDS=$(( $(date -u +%s) - $(cat rollback-start) ))" >> "$GITHUB_ENV"
+      - name: Restore the release that was live
+        if: always() && steps.pair.outputs.current_url != ''
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          CURRENT_URL: ${{ steps.pair.outputs.current_url }}
+        run: vercel promote "$CURRENT_URL" --yes
+      - name: Verify the public domain serves the restored revision
+        if: always() && steps.pair.outputs.current_url != ''
+        env:
+          COMMIT: ${{ steps.pair.outputs.current_revision }}
+        run: npx tsx scripts/verify-deployment.ts
+      - name: Record the rehearsal
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+          CURRENT: ${{ steps.pair.outputs.current_revision }}
+          PREVIOUS: ${{ steps.pair.outputs.previous_revision }}
+        run: |
+          {
+            echo "## Rollback rehearsal: $ENVIRONMENT"
+            echo
+            echo "| Step | Result |"
+            echo "| ---- | ------ |"
+            echo "| Public origin | $APP_URL |"
+            echo "| Live revision | \`$CURRENT\` |"
+            echo "| Rolled back to | \`$PREVIOUS\` (healthy on the public domain after ${ROLLBACK_SECONDS:-?} s) |"
+            echo "| Restored | \`$CURRENT\` healthy on the public domain |"
+            echo "| Completed | $(date -u +%Y-%m-%dT%H:%M:%SZ) |"
+          } >> "$GITHUB_STEP_SUMMARY"
