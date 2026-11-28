@@ -22,7 +22,7 @@ For a real Android device, use `adb reverse tcp:3000 tcp:3000` and build with `-
 
 Use a production HTTPS origin for production-targeted builds. Do not put auth secrets, deploy hooks or start.gg tokens in the APK. The API base URL is a public build-time value, never a credential.
 
-CI runs Android unit/UI tests, lint and an APK build on every PR and protected-branch push. Download `openbracket-android-<commit>` from the workflow artifacts and install it on an emulator or device. This is a debug-signed test artifact; no store publication is required.
+CI runs Android unit/UI tests, lint and an APK build on every PR and protected-branch push. Download `openbracket-android-<commit>` from the workflow artifacts and install it on an emulator or device. Each tagged release also attaches `openbracket-vX.Y.Z.apk`, built against the production origin, with its checksum; see [releases](releases.md). These are debug-signed test artifacts; no store publication is required.
 
 ## Remaining scope
 

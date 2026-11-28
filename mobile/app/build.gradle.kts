@@ -6,7 +6,7 @@ android {
         applicationId = "dev.openbracket"
         minSdk = 28
         targetSdk = 35
-        versionCode = 1
+        versionCode = 100
         versionName = "0.1.0"
         val apiBaseUrl = providers.gradleProperty("apiBaseUrl").orElse("http://10.0.2.2:3000").get()
         buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")

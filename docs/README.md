@@ -5,6 +5,7 @@
 | [Development](development.md)      | Setup, commands, layout, tests, extension points      |
 | [Architecture](architecture.md)    | Components, data model, decisions and API             |
 | [Deployment](deployment.md)        | CI/CD, staging, production, secrets and rollback      |
+| [Releases](releases.md)            | Tags, release notes, APK, code/database rollback      |
 | [Users](users.md)                  | Current administrator, player and spectator workflows |
 | [Connectors](connectors.md)        | Interface, normalization and a connector tutorial     |
 | [Mobile](mobile.md)                | Native Android setup, tests, build and limitations    |

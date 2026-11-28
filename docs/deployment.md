@@ -87,6 +87,8 @@ Both environments have deployment branch policies. No additional manual deployme
 
 ## Database and rollback
 
+The release-level procedure, tagging and the full code, database and Android rollback constraints are in [releases.md](releases.md).
+
 Migrations must be additive and backward compatible. They run before promotion while the old release can still serve traffic. A failed migration prevents promotion, but reverting code does not revert a migration. Test migrations against production-like synthetic data and verify restore procedures before destructive schema changes. The seed creates missing demo records only; it never overwrites results.
 
 Normally revert code through a reviewed PR and let CI redeploy. For an urgent rollback, use Vercel's rollback to the last known healthy deployment, then reconcile the source through a reviewed revert. Vercel rollback can disable automatic domain assignment until a deployment is promoted again; this pipeline explicitly promotes each verified release. Use a reviewed forward repair migration for schema problems, or a verified backup restore when necessary. Never use `prisma migrate reset` on either hosted environment.
